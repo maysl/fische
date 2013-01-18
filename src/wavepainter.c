@@ -91,26 +91,12 @@ fische__wavepainter_paint (struct fische__wavepainter* self,
             // base will be the middle of a line,
             // normally horizontal (angle = 0), but could be rotating
             fische__point base1;
-            if (FISCHE_PRIVATE (P)->orientation == _FISCHE__PORTRAIT_)
-                base1.x = center.x + (dim / 6) * cos (P->angle);
-            else
-                base1.x = center.x + (dim / 6) * sin (P->angle);
-
-            if (FISCHE_PRIVATE (P)->orientation == _FISCHE__PORTRAIT_)
-                base1.y = center.y + (dim / 6) * sin (P->angle);
-            else
-                base1.y = center.y + (dim / 6) * cos (P->angle);
+            base1.x = center.x + (dim / 6) * cos (P->angle);
+            base1.y = center.y + (dim / 6) * sin (P->angle);
 
             fische__point base2;
-            if (FISCHE_PRIVATE (P)->orientation == _FISCHE__PORTRAIT_)
-                base2.x = P->width / 2 - (dim / 6) * cos (P->angle);
-            else
-                base2.x = P->width / 2 - (dim / 6) * sin (P->angle);
-
-            if (FISCHE_PRIVATE (P)->orientation == _FISCHE__PORTRAIT_)
-                base2.y = P->height / 2 - (dim / 6) * sin (P->angle);
-            else
-                base2.y = P->height / 2 - (dim / 6) * cos (P->angle);
+            base2.x = P->width / 2 - (dim / 6) * cos (P->angle);
+            base2.y = P->height / 2 - (dim / 6) * sin (P->angle);
 
             // create vectors perpendicular to the line center->base
             fische__vector _nvec1 = base1;
@@ -186,12 +172,8 @@ fische__wavepainter_paint (struct fische__wavepainter* self,
 
         // circular shape
         case 1: {
-            double f = cos (M_PI / 3 + 2 * P->angle) + 0.5;
-            if (FISCHE_PRIVATE (P)->orientation == _FISCHE__PORTRAIT_)
-                f = 1;
+            double f = 1;
             double e = cos (M_PI / 3 + 2 * P->angle) + 0.5;
-            if (FISCHE_PRIVATE (P)->orientation == _FISCHE__LANDSCAPE_)
-                e = 1;
 
             uint_fast16_t i;
             for (i = 0; i < size - 1; i ++) {
@@ -201,10 +183,6 @@ fische__wavepainter_paint (struct fische__wavepainter* self,
                 // calculate angles for this and the next sound sample
                 double phi1 = M_PI * (0.25 + incr / size) + P->angle;
                 double phi2 = phi1 + M_PI / size;
-                if (FISCHE_PRIVATE (P)->orientation == _FISCHE__PORTRAIT_) {
-                    phi1 += M_PI / 2;
-                    phi2 += M_PI / 2;
-                }
 
                 // calculate the corresponding radius
                 double r1 = dim / 4 + * (data + 2 * i) / scale;

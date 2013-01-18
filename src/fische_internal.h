@@ -18,8 +18,6 @@
 
 uint_fast8_t _fische__cpu_detect_();
 
-enum {_FISCHE__PORTRAIT_, _FISCHE__LANDSCAPE_};
-
 
 struct _fische__internal_ {
     struct fische__screenbuffer*    screenbuffer;
@@ -31,7 +29,6 @@ struct _fische__internal_ {
     double                          init_progress;
     uint_fast8_t                    init_cancel;
     uint_fast8_t                    audio_valid;
-    uint_fast8_t                    orientation;
 };
 
 #endif

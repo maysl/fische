@@ -9,7 +9,7 @@ set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Werror -O0 -g" )
 set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3" )
 
 IF( NOT GLUT_FOUND )
-    set( GLUT_LIBRARIES "glut" )
+    set( GLUT_LIBRARIES "-lglut -lGL -lGLU" )
 ENDIF( NOT GLUT_FOUND )
 
 include_directories( src ${GLUT_INCLUDE_DIRS} )

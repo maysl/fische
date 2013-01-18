@@ -174,7 +174,6 @@ fische_start (struct fische* handle)
     struct _fische__internal_* P = handle->priv;
 
     P->init_progress = -1;
-    P->orientation = handle->width >= handle->height ? _FISCHE__LANDSCAPE_ : _FISCHE__PORTRAIT_;
 
     P->analyst = fische__analyst_new (handle);
     P->screenbuffer = fische__screenbuffer_new (handle);

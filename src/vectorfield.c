@@ -53,7 +53,6 @@ _fische__fill_thread_ (void* arg)
     uint16_t* field = params->data;
     int fieldno = params->number;
     struct _fische__vectorfield_* P = params->vecfield;
-    uint_fast8_t orientation = FISCHE_PRIVATE (P)->orientation;
 
     uint_fast16_t y;
     for (y = params->start_y; y < params->end_y; y ++) {
@@ -77,10 +76,8 @@ _fische__fill_thread_ (void* arg)
 
             // distance and direction relative to left co-center
             fische__vector rvec_left;
-            rvec_left.x = x;
-            rvec_left.x -= (orientation == _FISCHE__LANDSCAPE_) ? P->center_x - P->width / 3 * P->fische->scale : P->center_x;
-            rvec_left.y = y;
-            rvec_left.y -= (orientation == _FISCHE__LANDSCAPE_) ? P->center_y : P->center_y - P->height / 3 * P->fische->scale;
+            rvec_left.x = x - P->center_x + P->width / 3 * P->fische->scale;
+            rvec_left.y = y - P->center_y;
 
             fische__vector e_left = fische__vector_single (&rvec_left);
             fische__vector n_left = fische__vector_normal (&e_left);
@@ -89,10 +86,8 @@ _fische__fill_thread_ (void* arg)
 
             // distance and direction relative to right co-center
             fische__vector rvec_right;
-            rvec_right.x = x;
-            rvec_right.x -= (orientation == _FISCHE__LANDSCAPE_) ? P->center_x + P->width / 3 * P->fische->scale : P->center_x;
-            rvec_right.y = y;
-            rvec_right.y -= (orientation == _FISCHE__LANDSCAPE_) ? P->center_y : P->center_y + P->height / 3 * P->fische->scale;
+            rvec_right.x = x - P->center_x - P->width / 3 * P->fische->scale;
+            rvec_right.y = y - P->center_y;
 
             fische__vector e_right = fische__vector_single (&rvec_right);
             fische__vector n_right = fische__vector_normal (&e_right);

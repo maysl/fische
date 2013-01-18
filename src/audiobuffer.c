@@ -165,9 +165,8 @@ fische__audiobuffer_get (struct fische__audiobuffer* self)
 void
 fische__audiobuffer_lock (struct fische__audiobuffer* self)
 {
-    while (self->priv->is_locked)
-        usleep (1);
-    self->priv->is_locked = 1;
+    while ( !__sync_bool_compare_and_swap( &self->priv->is_locked, 0, 1 ) )
+        usleep( 1 );
 }
 
 void

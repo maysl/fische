@@ -67,17 +67,14 @@ fische__screenbuffer_free (struct fische__screenbuffer* self)
 void
 fische__screenbuffer_lock (struct fische__screenbuffer* self)
 {
-    struct _fische__screenbuffer_* P = self->priv;
-    while (P->is_locked)
-        usleep (1);
-    P->is_locked = 1;
+    while ( !__sync_bool_compare_and_swap( &self->priv->is_locked, 0, 1 ) )
+        usleep( 1 );
 }
 
 void
 fische__screenbuffer_unlock (struct fische__screenbuffer* self)
 {
-    struct _fische__screenbuffer_* P = self->priv;
-    P->is_locked = 0;
+    self->priv->is_locked = 0;
 }
 
 void

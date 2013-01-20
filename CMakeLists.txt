@@ -12,6 +12,12 @@ IF( NOT GLUT_FOUND )
     set( GLUT_LIBRARIES "-lglut -lGL -lGLU" )
 ENDIF( NOT GLUT_FOUND )
 
+set( BOOST_LIBRARIES "-lboost_system -lboost_thread -lboost_program_options" )
+IF( CMAKE_SYSTEM_NAME MATCHES "Windows" )
+    set( BOOST_LIBRARIES "-DBOOST_THREAD_USE_LIB -lboost_system-mt -lboost_thread_win32-mt -lboost_program_options-mt" )
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_THREAD_USE_LIB" )
+ENDIF( CMAKE_SYSTEM_NAME MATCHES "Windows" )
+
 include_directories( src ${GLUT_INCLUDE_DIRS} )
 
 add_executable( fische
@@ -26,5 +32,5 @@ add_executable( fische
                 src/wavepainter.c
                 src/main.cpp )
 
-target_link_libraries( fische pthread ${GLUT_LIBRARIES} )
+target_link_libraries( fische -lpthread ${BOOST_LIBRARIES} ${GLUT_LIBRARIES} )
 

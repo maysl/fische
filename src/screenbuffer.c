@@ -59,6 +59,8 @@ fische__screenbuffer_free (struct fische__screenbuffer* self)
     if (!self)
         return;
 
+    fische__screenbuffer_lock( self );
+
     free (self->priv);
     free (self->pixels);
     free (self);

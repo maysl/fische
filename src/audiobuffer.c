@@ -38,6 +38,8 @@ fische__audiobuffer_free (struct fische__audiobuffer* self)
     if (!self)
         return;
 
+    fische__audiobuffer_lock( self );
+
     free (self->priv->buffer);
     free (self->priv);
     free (self);

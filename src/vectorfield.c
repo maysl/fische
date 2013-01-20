@@ -36,6 +36,8 @@ _fische__vectorfield_validate_ (struct _fische__vectorfield_* P,
                                 double x,
                                 double y)
 {
+    if( vec->x < -1e6 )
+        abort();
     while (x + vec->x < 2)
         vec->x += 1;
     while (x + vec->x > P->width - 3)
@@ -76,8 +78,8 @@ _fische__fill_thread_ (void* arg)
 
             // distance and direction relative to left co-center
             fische__vector rvec_left;
-            rvec_left.x = x - P->center_x + P->width / 3 * P->fische->scale;
-            rvec_left.y = y - P->center_y;
+            rvec_left.x = (double)x - P->center_x + P->width / 3 * P->fische->scale;
+            rvec_left.y = (double)y - P->center_y;
 
             fische__vector e_left = fische__vector_single (&rvec_left);
             fische__vector n_left = fische__vector_normal (&e_left);
@@ -86,8 +88,8 @@ _fische__fill_thread_ (void* arg)
 
             // distance and direction relative to right co-center
             fische__vector rvec_right;
-            rvec_right.x = x - P->center_x - P->width / 3 * P->fische->scale;
-            rvec_right.y = y - P->center_y;
+            rvec_right.x = (double)x - P->center_x - P->width / 3 * P->fische->scale;
+            rvec_right.y = (double)y - P->center_y;
 
             fische__vector e_right = fische__vector_single (&rvec_right);
             fische__vector n_right = fische__vector_normal (&e_right);

@@ -91,12 +91,12 @@ fische__wavepainter_paint (struct fische__wavepainter* self,
             // base will be the middle of a line,
             // normally horizontal (angle = 0), but could be rotating
             fische__point base1;
-            base1.x = center.x + (dim / 6) * cos (P->angle);
-            base1.y = center.y + (dim / 6) * sin (P->angle);
+            base1.x = center.x + (dim / 6) * sin (P->angle);
+            base1.y = center.y + (dim / 6) * cos (P->angle);
 
             fische__point base2;
-            base2.x = P->width / 2 - (dim / 6) * cos (P->angle);
-            base2.y = P->height / 2 - (dim / 6) * sin (P->angle);
+            base2.x = P->width / 2 - (dim / 6) * sin (P->angle);
+            base2.y = P->height / 2 - (dim / 6) * cos (P->angle);
 
             // create vectors perpendicular to the line center->base
             fische__vector _nvec1 = base1;
@@ -172,8 +172,8 @@ fische__wavepainter_paint (struct fische__wavepainter* self,
 
         // circular shape
         case 1: {
-            double f = 1;
-            double e = cos (M_PI / 3 + 2 * P->angle) + 0.5;
+            double f = cos (M_PI / 3 + 2 * P->angle) + 0.5;
+            double e = 1;
 
             uint_fast16_t i;
             for (i = 0; i < size - 1; i ++) {

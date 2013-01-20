@@ -309,7 +309,7 @@ int main( int argc, char** argv )
     fische_init();
     texture_init();
 
-    boost::thread reader_thread( read_func );
+    boost::thread _( read_func );
     glutMainLoop();
 
     g_run = false;

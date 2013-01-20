@@ -34,6 +34,7 @@ GLuint          g_texture = -1;
 vector<uint8_t> g_axis;
 volatile bool   g_run = true;
 bool            g_fullscreen = false;
+bool            g_nervous_start;
 
 
 
@@ -178,6 +179,10 @@ void on_key( unsigned char c, int x, int y )
                 glutSetCursor( GLUT_CURSOR_INHERIT );
                 g_fullscreen = false;
             }
+            break;
+
+        case 'n':
+            g_fische->nervous_mode = g_fische->nervous_mode ? 0 : 1;
     }
 }
 
@@ -255,6 +260,8 @@ void fische_init()
     g_fische->used_cpus = boost::thread::hardware_concurrency();
     g_fische->height = 128 * pow( 2, g_detail );
     g_fische->width = 2 * g_fische->height;
+    if( g_nervous_start )
+        g_fische->nervous_mode = 1;
 
     if( fische_start( g_fische ) != 0 ) {
         cerr << "fische failed to start: " << g_fische->error_text << endl;
@@ -281,6 +288,7 @@ void parse_commandline( int& argc, char**& argv )
     desc.add_options()
         ( "help,h", "this help message" )
         ( "detail,d", po::value<int>( &g_detail )->default_value( 1 ), "level of detail [0..3]" )
+        ( "nervous,n", po::value<bool>( &g_nervous_start )->default_value( false )->implicit_value( true ), "start in nervous mode (more mode changes)" );
     ;
 
     po::variables_map vm;

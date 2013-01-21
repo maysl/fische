@@ -1,3 +1,30 @@
+/***************************************************************
+ * Copyright (C) 2013 Marcel Ebmer
+ *
+ * Permission is hereby granted, free of charge, to any person
+ * obtaining a copy of this software and associated documen-
+ * tation files (the "Software"), to deal in the Software
+ * without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to
+ * whom the Software is furnished to do so, subject to the
+ * following conditions:
+ *
+ * The above copyright notice and this permission notice shall
+ * be included in all copies or substantial portions of the
+ * Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+ * KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ * PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
+ * OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ **************************************************************/
+
+
 #include "fische.h"
 
 #include <iostream>
@@ -347,10 +374,10 @@ void texture_init()
 void parse_commandline( int& argc, char**& argv )
 {
     namespace po = boost::program_options;
-    po::options_description desc( "fische options" );
+    po::options_description desc( "known options" );
     desc.add_options()
         ( "help,h", "this help message" )
-        ( "detail,d", po::value<int>( &g_detail )->default_value( 2 ), "level of detail [0..3] (this really eats CPU)" )
+        ( "detail,d", po::value<int>( &g_detail )->default_value( 2 ), "level of detail [0..3] (this eats CPU)" )
         ( "nervous,n", po::value<bool>( &g_nervous_start )->default_value( false )->implicit_value( true ), "start in nervous mode (more mode changes)" )
         ( "fullscreen,f", po::value<bool>( &g_fullscreen_start )->default_value( false )->implicit_value( true ), "start in fullscreen mode" )
     ;
@@ -360,7 +387,8 @@ void parse_commandline( int& argc, char**& argv )
     po::notify( vm );
 
     if( vm.count( "help" ) ) {
-        cout << desc << "\n";
+        cout << "\nusage: <some_data_source> | fische [options]\n"
+             << desc << "\n";
         exit( EXIT_SUCCESS );
     }
 }

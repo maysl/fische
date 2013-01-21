@@ -1,6 +1,10 @@
 cmake_minimum_required( VERSION 2.6 )
 project( fische )
 
+IF( NOT CMAKE_BUILD_TYPE )
+    set( CMAKE_BUILD_TYPE "Release" )
+ENDIF( NOT CMAKE_BUILD_TYPE )
+
 find_package( PkgConfig )
 pkg_check_modules( GLUT glut )
 

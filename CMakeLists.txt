@@ -14,7 +14,7 @@ ENDIF( NOT GLUT_FOUND )
 
 set( BOOST_LIBRARIES "-lboost_system -lboost_thread -lboost_program_options" )
 IF( CMAKE_SYSTEM_NAME MATCHES "Windows" )
-    set( BOOST_LIBRARIES "-DBOOST_THREAD_USE_LIB -lboost_system-mt -lboost_thread_win32-mt -lboost_program_options-mt" )
+    set( BOOST_LIBRARIES "-lboost_system-mt -lboost_thread_win32-mt -lboost_program_options-mt" )
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBOOST_THREAD_USE_LIB" )
 ENDIF( CMAKE_SYSTEM_NAME MATCHES "Windows" )
 

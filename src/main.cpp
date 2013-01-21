@@ -7,10 +7,6 @@
 #include <boost/thread.hpp>
 #include <boost/program_options.hpp>
 
-#ifdef _WIN32
-#include <unistd.h>
-#endif
-
 #include <GL/freeglut.h>
 
 #define DEFAULT_WIDTH 800
@@ -19,25 +15,29 @@ using namespace std;
 
 
 
-// some globals
 FISCHE*         g_fische = 0;
-unsigned        g_quadsY = 8;
-unsigned        g_quadsX = ( g_quadsY * 16 ) / 9;
+unsigned        g_quadsY;
+unsigned        g_quadsX;
 volatile bool   g_isrotating = false;
 double          g_angle = 0;
 double          g_lastangle = 0;
 double          g_angleincrement = 0;
-double          g_texright = 0.94444444;
-double          g_texleft = 0.05555555;
+double          g_texright;
+double          g_texleft;
 int             g_detail = 1;
-GLuint          g_texture = -1;
+GLuint          g_texture;
 vector<uint8_t> g_axis;
 volatile bool   g_run = true;
 bool            g_fullscreen = false;
+bool            g_fullscreen_start;
 bool            g_nervous_start;
+volatile bool   g_data_available;
 
 
 
+/**
+ * animation callback for the fische library
+ */
 void on_beat( double frames_per_beat )
 {
     if( !g_isrotating ) {
@@ -50,6 +50,9 @@ void on_beat( double frames_per_beat )
 
 
 
+/**
+ * GLUT reshape callback function
+ */
 void on_resize( int w, int h )
 {
     glViewport( 0, 0, w, h );
@@ -70,10 +73,13 @@ void on_resize( int w, int h )
 
 
 
-void textured_quad( double center_x, double center_y,
-                    double angle, double axis,
-                    double width, double height,
-                    double tex_left, double tex_right, double tex_top, double tex_bottom )
+/**
+ * drawing utility function
+ */
+inline void textured_quad( double center_x, double center_y,
+                           double angle, double axis,
+                           double width, double height,
+                           double tex_left, double tex_right, double tex_top, double tex_bottom )
 {
     glPushMatrix();
 
@@ -102,6 +108,11 @@ void textured_quad( double center_x, double center_y,
     glPopMatrix();
 }
 
+
+
+/**
+ * GLUT display callback function
+ */
 void on_display( void )
 {
     if( g_isrotating ) {
@@ -156,29 +167,42 @@ void on_display( void )
 
 
 
-void on_key( unsigned char c, int x, int y )
+/**
+ * change fullscreen status
+ */
+void toggle_fullscreen()
 {
     static size_t stored_w = DEFAULT_WIDTH;
     static size_t stored_h = ( DEFAULT_WIDTH * 9 ) / 16;
 
+    if( !g_fullscreen ) {
+        stored_w = glutGet( GLUT_WINDOW_WIDTH );
+        stored_h = glutGet( GLUT_WINDOW_HEIGHT );
+        glutFullScreen();
+        glutSetCursor( GLUT_CURSOR_NONE );
+        g_fullscreen = true;
+    }
+    else {
+        glutReshapeWindow( stored_w, stored_h );
+        glutSetCursor( GLUT_CURSOR_INHERIT );
+        g_fullscreen = false;
+    }
+}
+
+
+
+/**
+ * GLUT key press callback function
+ */
+void on_key( unsigned char c, int x, int y )
+{
     switch( c ) {
         case 27:
             glutLeaveMainLoop();
             break;
 
         case 'f':
-            if( !g_fullscreen ) {
-                stored_w = glutGet( GLUT_WINDOW_WIDTH );
-                stored_h = glutGet( GLUT_WINDOW_HEIGHT );
-                glutFullScreen();
-                glutSetCursor( GLUT_CURSOR_NONE );
-                g_fullscreen = true;
-            }
-            else {
-                glutReshapeWindow( stored_w, stored_h );
-                glutSetCursor( GLUT_CURSOR_INHERIT );
-                g_fullscreen = false;
-            }
+            toggle_fullscreen();
             break;
 
         case 'n':
@@ -188,6 +212,9 @@ void on_key( unsigned char c, int x, int y )
 
 
 
+/**
+ * GLUT idle callback function
+ */
 void on_idle()
 {
     static struct timeval tv;
@@ -200,7 +227,7 @@ void on_idle()
     else {
         int delay = 20000 - ( now - last );
         if( delay > 0 ) {
-            usleep( delay );
+            boost::this_thread::sleep( boost::posix_time::microseconds( delay ) );
             last = now + delay;
         }
         else
@@ -212,12 +239,16 @@ void on_idle()
 
 
 
-void read_func()
+/**
+ * threaded input from stdin
+ */
+void read_thread_func()
 {
     char buf[4096];
 
     for( ;; ) {
         cin.read( buf, 4096 );
+        g_data_available = true;
         if( g_run )
             fische_audiodata( g_fische, buf, 4096 );
         else
@@ -227,6 +258,23 @@ void read_func()
 
 
 
+/**
+ * install a timeout for first audio data input
+ */
+void audio_valid_thread_func()
+{
+    boost::this_thread::sleep( boost::posix_time::seconds( 1 ) );
+    if( !g_data_available ) {
+        cerr << "*** please pipe me some data!\n";
+        glutLeaveMainLoop();
+    }
+}
+
+
+
+/**
+ * GLUT and OpenGL initialization
+ */
 void glut_gl_init( int& argc, char**& argv )
 {
     glutInit( &argc, argv );
@@ -250,6 +298,11 @@ void glut_gl_init( int& argc, char**& argv )
     glPolygonMode( GL_FRONT, GL_FILL );
 }
 
+
+
+/**
+ * fische library initialization
+ */
 void fische_init()
 {
     g_fische = fische_new();
@@ -269,6 +322,11 @@ void fische_init()
     }
 }
 
+
+
+/**
+ * create an OpenGL texture
+ */
 void texture_init()
 {
     glGenTextures( 1, &g_texture );
@@ -281,14 +339,20 @@ void texture_init()
                   fische_render( g_fische ) );
 }
 
+
+
+/**
+ * handle program options
+ */
 void parse_commandline( int& argc, char**& argv )
 {
     namespace po = boost::program_options;
     po::options_description desc( "fische options" );
     desc.add_options()
         ( "help,h", "this help message" )
-        ( "detail,d", po::value<int>( &g_detail )->default_value( 1 ), "level of detail [0..3]" )
-        ( "nervous,n", po::value<bool>( &g_nervous_start )->default_value( false )->implicit_value( true ), "start in nervous mode (more mode changes)" );
+        ( "detail,d", po::value<int>( &g_detail )->default_value( 2 ), "level of detail [0..3] (this really eats CPU)" )
+        ( "nervous,n", po::value<bool>( &g_nervous_start )->default_value( false )->implicit_value( true ), "start in nervous mode (more mode changes)" )
+        ( "fullscreen,f", po::value<bool>( &g_fullscreen_start )->default_value( false )->implicit_value( true ), "start in fullscreen mode" )
     ;
 
     po::variables_map vm;
@@ -301,18 +365,24 @@ void parse_commandline( int& argc, char**& argv )
     }
 }
 
+
+
 int main( int argc, char** argv )
 {
     glut_gl_init( argc, argv );
     parse_commandline( argc, argv );
-
     fische_init();
     texture_init();
 
-    boost::thread _( read_func );
+    boost::thread _( read_thread_func );
+    boost::thread o( audio_valid_thread_func );
+
+    if( g_fullscreen_start ) {
+        toggle_fullscreen();
+    }
+
     glutMainLoop();
 
     g_run = false;
-
     fische_free( g_fische );
 }

@@ -63,8 +63,6 @@ _fische__vectorfield_validate_ (struct _fische__vectorfield_* P,
                                 double x,
                                 double y)
 {
-    if( vec->x < -1e6 )
-        abort();
     while (x + vec->x < 2)
         vec->x += 1;
     while (x + vec->x > P->width - 3)

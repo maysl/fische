@@ -147,7 +147,6 @@ void on_display( void )
         if( g_angle - g_lastangle > 180 ) {
             g_lastangle = g_lastangle ? 0 : 180;
             g_angle = g_lastangle;
-            cout << "angl " << g_angle << "\n";
             g_isrotating = false;
         }
     }

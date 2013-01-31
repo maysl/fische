@@ -169,11 +169,8 @@ fische__audiobuffer_get (struct fische__audiobuffer* self)
     }
 
     // get/put ratio
-    double d_ratio = P->gets;
-    d_ratio /= P->puts;
-    uint_fast8_t ratio = floor (d_ratio + 0.5);
-    if (ratio < 2)
-        ratio = 2;
+    double d_ratio = ( (double) P->gets ) / P->puts;
+    uint_fast8_t ratio = ceil( d_ratio );
 
     // how many samples to return
     uint_fast32_t n_samples = P->buffer_size / 2 / ratio;

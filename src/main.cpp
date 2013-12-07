@@ -59,7 +59,7 @@ bool            g_fullscreen = false;
 bool            g_fullscreen_start;
 bool            g_nervous_start;
 volatile bool   g_data_available;
-
+volatile bool   g_paused;
 
 
 /**
@@ -142,6 +142,9 @@ inline void textured_quad( double center_x, double center_y,
  */
 void on_display( void )
 {
+    if( g_paused )
+        return;
+
     if( g_isrotating ) {
         g_angle += g_angleincrement;
         if( g_angle - g_lastangle > 180 ) {
@@ -233,6 +236,9 @@ void on_key( unsigned char c, int x, int y )
 
         case 'n':
             g_fische->nervous_mode = g_fische->nervous_mode ? 0 : 1;
+
+        case 'p':
+            g_paused = g_paused ? false : true;
     }
 }
 
@@ -275,9 +281,9 @@ void read_thread_func()
     for( ;; ) {
         cin.read( buf, 4096 );
         g_data_available = true;
-        if( g_run )
+        if( g_run && !g_paused )
             fische_audiodata( g_fische, buf, 4096 );
-        else
+        else if( !g_run )
             break;
     }
 }

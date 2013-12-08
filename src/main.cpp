@@ -58,8 +58,8 @@ volatile bool   g_run = true;
 bool            g_fullscreen = false;
 bool            g_fullscreen_start;
 bool            g_nervous_start;
-volatile bool   g_data_available;
-volatile bool   g_paused;
+volatile bool   g_data_available = false;
+volatile bool   g_paused = false;
 
 
 /**

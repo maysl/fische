@@ -236,6 +236,7 @@ void on_key( unsigned char c, int x, int y )
 
         case 'n':
             g_fische->nervous_mode = g_fische->nervous_mode ? 0 : 1;
+            break;
 
         case 'p':
             g_paused = g_paused ? false : true;
